@@ -5,6 +5,7 @@ build = 'false'
 end = 'false'
 vertices = []
 adjMatrix = []
+files = []
 
 
 # Returns the max number of edges in graph
@@ -161,6 +162,7 @@ def add_vertex(line):
         return 'true'
 
 
+# Used in delete_vertex, remove the row and column of deleted vertex
 def shift(index):
     global adjMatrix
     for i in range(len(adjMatrix)):
@@ -187,6 +189,43 @@ def delete_vertex(line):
         vertices.remove(line[1])
         shift(index)
         return 'true'
+
+
+def is_connected():
+    global adjMatrix
+    global vertices
+    parent = vertices
+    been = []
+    child = []
+    count = 0
+    for i in range(len (parent)):
+        been.append(0)
+    connected = "false"
+    for i in range(len(adjMatrix)):
+        for j in range(len(adjMatrix)):
+            if(adjMatrix[i][j]==1):
+                child.append(vertices[j])
+    for i in range(len(child)):
+        for j in range (len(parent)):
+            if(child[i] == parent[j]):
+                been[j] = 1
+    for i in range(len(been)):
+        if (been[i] == 1):
+            count += 1
+    if(count == len(parent)):
+        connected = "true"
+    return connected
+
+
+def print_graph():
+    header = ' '
+    for i in range(len(files)):
+        print(files[i])
+    for i in range(0, len(vertices)):
+        header += '  ' + vertices[i]
+    print(header)
+    for i in range(len(vertices)):
+        print(vertices[i], adjMatrix[i])
 
 
 # After 'end', nested if else to call different functions
@@ -233,6 +272,11 @@ def function_calls(line):
     elif line[0] == 'deleteVertex':
         ans = delete_vertex(line)
         print(line, ans, vertices, adjMatrix)
+    elif line[0] == 'readGraph':
+        graph()
+    elif line[0] == 'isConnected':
+        ans = is_connected()
+        print(line, ans)
 
 
 # sets up program to run based on file line read
@@ -270,8 +314,8 @@ def execute(line):
         function_calls(line)
 
 
-if __name__ == '__main__':
-
+def graph():
+    global files
     fileName = input('Enter the file name: ')
     file = open(fileName, 'r')
     for line in file:
@@ -280,8 +324,14 @@ if __name__ == '__main__':
             print('>>>>', line)
             print("Do Nothing")
         else:
+            files.append(line)
             statements = line.split(' ')
             print('>>>>', statements)
             execute(statements)
     print('------------------------------------------------')
     file.close()
+
+
+if __name__== '__main__':
+    graph()
+    print_graph()
